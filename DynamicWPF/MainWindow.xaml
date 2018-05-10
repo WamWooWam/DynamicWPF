@@ -1,0 +1,48 @@
+﻿<Window x:Class="DynamicWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:script="clr-namespace:DynamicWPF.Scripting"
+        mc:Ignorable="d" Loaded="Window_Loaded"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style x:Key="IconStyle" TargetType="Control">
+            <Style.Setters>
+                <Setter Property="FontFamily" Value="{StaticResource SegoeMDL2}"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="2"/>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border BorderThickness="0,0,0,1" BorderBrush="#80000000">
+            <Grid x:Name="controlsGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Column="0" x:Name="backButton" Click="backButton_Click" IsEnabled="{Binding ElementName=contentFrame, Path=CanGoBack}" Style="{StaticResource IconStyle}" Content="&#xE72B;" Margin="10,10,5,10"/>
+                <Button Grid.Column="1" x:Name="forwardButton" Click="forwardButton_Click" IsEnabled="{Binding ElementName=contentFrame, Path=CanGoForward}" Style="{StaticResource IconStyle}" Content="&#xE72A;" Margin="5,10,10,10"/>
+                <Button Grid.Column="2" Style="{StaticResource IconStyle}" Content="&#xE72C;" Margin="5,10,5,10"/>
+
+                <TextBox x:Name="urlBar" Grid.Column="3" Margin="5,10,5,10" Padding="2" Text="http://wamwoowam.co.uk/page1.xaml" />
+
+                <Button Grid.Column="4" Style="{StaticResource IconStyle}" Content="&#xE8AD;" Margin="5,10,10,10" Click="Button_Click"/>
+            </Grid>
+        </Border>
+        <Frame Grid.Row="1" x:Name="contentFrame" NavigationUIVisibility="Hidden"/>
+    </Grid>
+</Window>

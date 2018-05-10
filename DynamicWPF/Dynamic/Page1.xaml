@@ -1,0 +1,9 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:s="clr-namespace:DynamicWPF.Scripting;assembly=DynamicWPF"
+    Margin="10">
+    <StackPanel Name="grid" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Image Source="/img/c24e26a16b75890afbc7fceedaa665db.png" MaxWidth="128"/>
+        <TextBlock>Go to <Hyperlink NavigateUri="./Page2.xaml">Page2</Hyperlink></TextBlock>
+    </StackPanel>
+</Page>
