@@ -20,9 +20,11 @@ namespace DynamicWPF.Static
     /// </summary>
     public partial class ErrorPage : Page
     {
-        public ErrorPage()
+        public ErrorPage(Exception ex)
         {
             InitializeComponent();
+            exMessage.Text = ex.Message;
+            exStackTrace.Text = ex.StackTrace;
         }
     }
 }

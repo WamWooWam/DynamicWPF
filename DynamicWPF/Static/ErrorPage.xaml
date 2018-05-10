@@ -6,9 +6,34 @@
       xmlns:local="clr-namespace:DynamicWPF.Static"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ErrorPage">
+      Title="Error">
 
-    <Grid>
-        
+    <Grid MaxWidth="640" VerticalAlignment="Center" Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock FontFamily="{StaticResource SegoeMDL2}" Text="&#xE783;" FontSize="72" Foreground="Red"/>
+        <Grid Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Well, shit." FontSize="24" TextWrapping="Wrap"/>
+            <TextBlock Grid.Row="1" Text="Something went a bit tits up there, and an exception was thrown. Sorry!" FontSize="14" TextWrapping="Wrap"/>
+            <Expander Grid.Row="2" Header="More Details" FontSize="14" Margin="-3,5,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="exMessage" Text="Object reference not set to an instance of an object." FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="exStackTrace" Grid.Row="1" FontSize="12" Text="--End of Stack Trace--" FontFamily="{StaticResource FiraCode}" TextWrapping="Wrap"/>
+                    </Grid>
+                </ScrollViewer>
+            </Expander>
+        </Grid>
     </Grid>
 </Page>

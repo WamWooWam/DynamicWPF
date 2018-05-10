@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:script="clr-namespace:DynamicWPF.Scripting"
-        mc:Ignorable="d" Loaded="Window_Loaded"
+        mc:Ignorable="d" 
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <Style x:Key="IconStyle" TargetType="Control">
@@ -38,7 +38,7 @@
                 <Button Grid.Column="1" x:Name="forwardButton" Click="forwardButton_Click" IsEnabled="{Binding ElementName=contentFrame, Path=CanGoForward}" Style="{StaticResource IconStyle}" Content="&#xE72A;" Margin="5,10,10,10"/>
                 <Button Grid.Column="2" Style="{StaticResource IconStyle}" Content="&#xE72C;" Margin="5,10,5,10"/>
 
-                <TextBox x:Name="urlBar" Grid.Column="3" Margin="5,10,5,10" Padding="2" Text="http://wamwoowam.co.uk/page1.xaml" />
+                <TextBox x:Name="urlBar" Grid.Column="3" Margin="5,10,5,10" Padding="2" Text="http://wamwoowam.co.uk/xaml/index.xaml" />
 
                 <Button Grid.Column="4" Style="{StaticResource IconStyle}" Content="&#xE8AD;" Margin="5,10,10,10" Click="Button_Click"/>
             </Grid>

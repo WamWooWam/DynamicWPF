@@ -1,4 +1,5 @@
 ﻿using DynamicWPF.Scripting;
+using DynamicWPF.Static;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DynamicWPF
 {
@@ -27,18 +27,15 @@ namespace DynamicWPF
     public partial class MainWindow : Window
     {
         HttpClient client = new HttpClient();
+        static readonly string[] allowedNamespaces = new[] { "System.Windows", "System.Windows.Controls", "System.Windows.Documents" };
         static Lazy<Type[]> availableTypesLazy = new Lazy<Type[]>(() => AppDomain.CurrentDomain.GetAssemblies()
                      .SelectMany(t => t.GetTypes())
-                     .Where(t => !t.ContainsGenericParameters && (t.IsClass || t.IsSubclassOf(typeof(ValueType))) && (t.Namespace == "System.Windows.Controls" || t.Namespace == "System.Windows")).ToArray());
+                     .Where(t => !t.ContainsGenericParameters && (t.IsClass || t.IsSubclassOf(typeof(ValueType))) && allowedNamespaces.Contains(t.Namespace) && !t.FullName.Contains("+")).ToArray());
 
         public MainWindow()
         {
+            Tools.SetBrowserEmulationMode();
             InitializeComponent();
-        }
-
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
         }
 
         V8ScriptEngine engine;
@@ -68,7 +65,7 @@ namespace DynamicWPF
                 }
 
                 ParserContext parserContext = new ParserContext();
-                parserContext.XmlnsDictionary["s"] = "clr-namespace:DynamicWPF.Scripting;assembly=DynamicWPF"; 
+                parserContext.XmlnsDictionary["s"] = "clr-namespace:DynamicWPF.Scripting;assembly=DynamicWPF";
 
                 try
                 {
@@ -80,12 +77,35 @@ namespace DynamicWPF
 
                     parserContext.BaseUri = new Uri(url.Remove(url.LastIndexOf('/') + 1));
 
-                    var obj = XamlReader.Load(await resp.Content.ReadAsStreamAsync(), parserContext);
-                    contentFrame.Navigate((Page)obj);
+                    Page obj = null;
 
-                    foreach (var text in ((obj as Page).Content as DependencyObject).FindVisualChildren<TextBlock>())
+                    if (resp.IsSuccessStatusCode)
                     {
-                        foreach (Hyperlink link in text.Inlines.Where(t => t is Hyperlink))
+                        try
+                        {
+                            obj = (Page)XamlReader.Load(await resp.Content.ReadAsStreamAsync(), parserContext);
+                        }
+                        catch
+                        {
+                            Process.Start(url);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            obj = (Page)XamlReader.Load(await resp.Content.ReadAsStreamAsync(), parserContext);
+                        }
+                        catch
+                        {
+                            resp.EnsureSuccessStatusCode();
+                        }
+                    }
+
+                    if (obj != null)
+                    {
+                        contentFrame.Navigate(obj);
+                        foreach (var link in (obj.Content as DependencyObject).FindVisualChildren<Hyperlink>())
                         {
                             link.RequestNavigate += async (o, ev) =>
                             {
@@ -95,23 +115,22 @@ namespace DynamicWPF
                                 await Navigate(u.IsAbsoluteUri ? u : new Uri(parserContext.BaseUri, u));
                             };
                         }
-                    }
 
-                    engine.AddHostObject("content", obj);
-
-                    foreach (var s in ScriptManager.GetScripts((UIElement)obj))
-                    {
-                        try
+                        engine.AddHostObject("content", obj);
+                        foreach (var s in ScriptManager.GetScripts(obj))
                         {
-                            var str = await client.GetStringAsync(s.Source.IsAbsoluteUri ? s.Source : new Uri(parserContext.BaseUri, s.Source));
-                            engine.Execute(str);
+                            try
+                            {
+                                var str = await client.GetStringAsync(s.Source.IsAbsoluteUri ? s.Source : new Uri(parserContext.BaseUri, s.Source));
+                                engine.Execute(str);
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
                 catch (Exception ex)
                 {
-
+                    contentFrame.Navigate(new ErrorPage(ex));
                 }
             }
             finally
